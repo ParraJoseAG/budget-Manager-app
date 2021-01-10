@@ -1,5 +1,6 @@
 package com.alkemy.java.budgetManager.controllers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,8 +51,12 @@ public class BudgetManagerController {
 		}
 
 		List<OperationEntity> listOperationsPerson = operationService.getLastTenOperation(idPerson);
+
+		BigDecimal balance = operationService.getCurrentBalance(idPerson);
+
 		model.addAttribute("operations", listOperationsPerson);
 		model.addAttribute("person", personEntity);
+		model.addAttribute("balance", balance);
 		model.addAttribute("titleTable", "Últimas operaciones realizadas");
 		return "budgetManager/homeOperationPerson";
 	}
@@ -85,7 +90,7 @@ public class BudgetManagerController {
 			RedirectAttributes attribute) {
 
 		int page = (int) (params.get("page") != null ? (Long.valueOf(params.get("page").toString()) - 1) : 0);
-		PageRequest pageRequest = PageRequest.of(page, 2);
+		PageRequest pageRequest = PageRequest.of(page, 5);
 
 		Page<OperationEntity> pageOperationEntity = operationService.getListOperationIngress(personEntity.getId(),
 				pageRequest);
@@ -100,8 +105,11 @@ public class BudgetManagerController {
 
 		List<OperationEntity> listOperationsPersonIngress = pageOperationEntity.getContent();
 
+		BigDecimal ingress = operationService.getTotalIngress(personEntity.getId());
+
 		model.addAttribute("operations", listOperationsPersonIngress);
 		model.addAttribute("person", personEntity);
+		model.addAttribute("ingress", ingress);
 		model.addAttribute("current", page + 1);
 		model.addAttribute("next", page + 2);
 		model.addAttribute("previous", page);
@@ -115,7 +123,7 @@ public class BudgetManagerController {
 			RedirectAttributes attribute) {
 
 		int page = (int) (params.get("page") != null ? (Long.valueOf(params.get("page").toString()) - 1) : 0);
-		PageRequest pageRequest = PageRequest.of(page, 2);
+		PageRequest pageRequest = PageRequest.of(page, 5);
 
 		Page<OperationEntity> pageOperationEntity = operationService.getListOperationExpenses(personEntity.getId(),
 				pageRequest);
@@ -129,9 +137,11 @@ public class BudgetManagerController {
 		}
 
 		List<OperationEntity> listOperationsPersonExpenses = pageOperationEntity.getContent();
+		BigDecimal expenses = operationService.getTotalExpenses(personEntity.getId());
 
 		model.addAttribute("operations", listOperationsPersonExpenses);
 		model.addAttribute("person", personEntity);
+		model.addAttribute("expenses", expenses);
 		model.addAttribute("current", page + 1);
 		model.addAttribute("next", page + 2);
 		model.addAttribute("previous", page);

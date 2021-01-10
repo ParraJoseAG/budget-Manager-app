@@ -1,6 +1,7 @@
 package com.alkemy.java.budgetManager.service;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,5 +17,11 @@ public interface IOperationService {
 	Page<OperationEntity> getListOperationIngress(Long id, Pageable pageable);
 
 	Page<OperationEntity> getListOperationExpenses(Long id, Pageable pageable);
+
+	BigDecimal getCurrentBalance(Long id);
+
+	BigDecimal getTotalIngress(Long id);
+
+	BigDecimal getTotalExpenses(Long id);
 
 }

@@ -26,7 +26,7 @@ import com.alkemy.java.budgetManager.exceptions.PersonNotFound;
 import com.alkemy.java.budgetManager.service.IPersonService;
 
 @Controller
-@RequestMapping("/people")
+@RequestMapping({ "/people", "/" })
 public class PersonController {
 
 	@Autowired
@@ -49,7 +49,7 @@ public class PersonController {
 		}
 
 		model.addAttribute("listPeople", pagePersonEntity.getContent());
-		model.addAttribute("titleTable", "Personas registradas en la App");
+		model.addAttribute("titleTable", "Personas registradas en la APP");
 		model.addAttribute("current", page + 1);
 		model.addAttribute("next", page + 2);
 		model.addAttribute("previous", page);
@@ -62,7 +62,7 @@ public class PersonController {
 
 		PersonEntity personEntity = new PersonEntity();
 
-		model.addAttribute("titleTable", "Registrando una persona en la App");
+		model.addAttribute("titleTable", "Registrando una persona en la APP");
 		model.addAttribute("action", "CREATE");
 		model.addAttribute("person", personEntity);
 

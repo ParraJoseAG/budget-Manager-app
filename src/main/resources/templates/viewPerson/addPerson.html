@@ -97,7 +97,7 @@
 								type="file" name="file" accept="image/*"
 								class="form-control form-control-sm col-md-4" />&nbsp;&nbsp;
 						</div>
-						<div class="form-group row" th:if="*{photo!=null}">
+						<div th:if="*{photo!=null}">
 							<div class="form-group row" th:if="*{photo!=''}">
 								<label class="col-md-2">FOTO GUARDADA:</label> <img
 									th:src="*{'data:image/jpeg;base64,'+{photo}}"
@@ -116,7 +116,6 @@
 								class="btn btn-primary btn-sm" th:href=@{/people/}>Cancelar</a>
 						</div>
 					</form>
-
 				</div>
 			</div>
 		</div>

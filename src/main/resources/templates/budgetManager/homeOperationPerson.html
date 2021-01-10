@@ -35,13 +35,32 @@
 			<h1 th:text="*{titleTable}" class="text-center alert alert-info"
 				role="alert"></h1>
 		</div>
-
-		<div class="container mt-2" th:if="${last<1}">
+		<div class="container mb-5" th:if="${last<1}">
+			<h3 th:if="${balance}>=0 and ${balance}<10000">
+				<span class="badge badge-info">BALANCE ACTUAL: <span
+					th:text="${balance}"></span></span>
+			</h3>
+			<h3 th:if="${balance}>=10000">
+				<span class="badge badge-dark">BALANCE ACTUAL: <span
+					th:text="${balance}"></span></span>
+			</h3>
+			<h3 th:if="${balance}<0">
+				<span class="badge badge-danger">BALANCE ACTUAL: <span
+					th:text="${balance}"></span></span>
+			</h3>
+		</div>
+		<div class="container mb-5" th:if="${last>0}">
+			<h3>
+				<span class="badge badge-dark">INGRESOS: <span
+					th:text="${ingress}"></span></span>
+			</h3>
+		</div>
+		<div class="container mt-2 mb-1" th:if="${last<1}">
 			<a class="btn btn-primary btn-sm"
 				th:href="@{/operation/addOperation}" title="Agregar Operación"><i
 				class="fa fa-plus-square" aria-hidden="true"></i> Agregar Operación</a>
 		</div>
-		<div class="container mt-2">
+		<div class="container">
 			<table class="table table-hover">
 				<thead>
 					<tr>
@@ -106,7 +125,7 @@
 			</div>
 		</div>
 	</div>
-	<footer>
+	<footer class="mt-5">
 		<div th:insert="/template :: footer"></div>
 	</footer>
 

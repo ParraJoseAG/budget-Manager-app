@@ -19,10 +19,9 @@
 	<header>
 		<div th:insert="/template :: header"></div>
 	</header>
-
 	<div class="container text-center mt-3" th:if="${listPeople.isEmpty()}">
 		<h1 class="alert alert-info" role="alert">No hay personas
-			registradas en la App</h1>
+			registradas en la APP</h1>
 
 		<div class="container mt-2">
 			<a class="btn btn-primary btn-sm" th:href="@{/people/addPerson}"
@@ -85,7 +84,6 @@
 							title="Eliminar persona"
 							onclick="return confirm('¿Estas seguro de eliminar a la persona?')"><i
 								class="fa fa-trash-o fa-lg"></i> Eliminar</a></td>
-
 					</tr>
 				</tbody>
 			</table>
