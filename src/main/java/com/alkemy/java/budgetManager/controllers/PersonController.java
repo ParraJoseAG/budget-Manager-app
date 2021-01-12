@@ -7,11 +7,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,7 +65,7 @@ public class PersonController {
 
 		PersonEntity personEntity = new PersonEntity();
 
-		model.addAttribute("titleTable", "Registrando una persona en la APP");
+		model.addAttribute("titleTable", "Registrar persona en la APP");
 		model.addAttribute("action", "CREATE");
 		model.addAttribute("person", personEntity);
 
@@ -70,8 +73,15 @@ public class PersonController {
 	}
 
 	@PostMapping("/savePerson")
-	public String savePerson(@ModelAttribute("person") PersonEntity personEntity, Model model,
-			@RequestParam("file") MultipartFile image, RedirectAttributes attribute) {
+	public String savePerson(@Valid @ModelAttribute("person") PersonEntity personEntity, BindingResult result,
+			Model model, @RequestParam("file") MultipartFile image, RedirectAttributes attribute) {
+
+		if (result.hasErrors()) {
+			model.addAttribute("titleTable", "Registrar persona en la APP");
+			model.addAttribute("action", "CREATE");
+			model.addAttribute("person", personEntity);
+			return "viewPerson/addPerson";
+		}
 
 		if (!image.isEmpty()) {
 
@@ -82,8 +92,12 @@ public class PersonController {
 			}
 		}
 
+		if (personEntity.getId() != null) {
+			attribute.addFlashAttribute("success", "Persona editada con éxito!");
+		} else {
+			attribute.addFlashAttribute("success", "Persona registrada con éxito!");
+		}
 		personService.savePerson(personEntity);
-		attribute.addFlashAttribute("success", "Persona registrada con éxito!");
 		return "redirect:/people";
 	}
 

@@ -15,6 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -31,14 +35,20 @@ public class OperationEntity implements Serializable {
 	@Column
 	private Long id;
 	@Column
+	@NotBlank
 	private String concept;
 	@Column
+	@NotNull
+	@Min(0)
 	private BigDecimal amount;
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Temporal(TemporalType.DATE)
+	@NotNull
+	@Past
 	private Date date;
 	@Column
+	@NotNull
 	private Type type;
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "person_id", nullable = false)

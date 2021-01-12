@@ -13,6 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "people")
@@ -25,16 +30,26 @@ public class PersonEntity implements Serializable {
 	@Column
 	private Long id;
 	@Column
+	@NotBlank
+	@Pattern(regexp = "[A-Za-zÁÉÍÓÚáéíóúñÑ\s]*")
 	private String name;
 	@Column
+	@NotBlank
+	@Pattern(regexp = "[A-Za-zÁÉÍÓÚáéíóúñÑ\s]*")
 	private String surname;
 	@Column
+	@Min(15)
+	@Max(100)
 	private int age;
 	@Column
+	@Pattern(regexp = "^[0-9]*$")
 	private String dni;
 	@Column
+	@NotBlank
+	@Email
 	private String email;
 	@Column
+	@Pattern(regexp = "^[0-9,+,\s]*$")
 	private String phoneNumber;
 	@Column
 	private String direction;
