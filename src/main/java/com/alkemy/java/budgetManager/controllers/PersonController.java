@@ -29,7 +29,7 @@ import com.alkemy.java.budgetManager.exceptions.PersonNotFound;
 import com.alkemy.java.budgetManager.service.IPersonService;
 
 @Controller
-@RequestMapping({ "/people", "/" })
+@RequestMapping("/people")
 public class PersonController {
 
 	@Autowired

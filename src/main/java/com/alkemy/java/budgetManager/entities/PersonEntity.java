@@ -2,6 +2,7 @@ package com.alkemy.java.budgetManager.entities;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,7 +11,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -56,6 +60,15 @@ public class PersonEntity implements Serializable {
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
 	private String photo;
+	@Column
+	private String password;
+	@Column
+	private boolean enabled;
+	@Column
+	private String username;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "authorities_users", joinColumns = @JoinColumn(name = "person_id"), inverseJoinColumns = @JoinColumn(name = "authority_id"))
+	private Set<AuthorityEntity> authority;
 	@OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<OperationEntity> operations;
 
@@ -129,6 +142,38 @@ public class PersonEntity implements Serializable {
 
 	public void setPhoto(String photo) {
 		this.photo = photo;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public Set<AuthorityEntity> getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(Set<AuthorityEntity> authority) {
+		this.authority = authority;
 	}
 
 	public List<OperationEntity> getOperations() {
