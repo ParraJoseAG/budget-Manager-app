@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -77,8 +79,18 @@ public class BudgetManagerController {
 	}
 
 	@PostMapping("/saveOperation")
-	public String savePerson(@ModelAttribute("operation") OperationEntity operationEntity, BindingResult result,
+	public String savePerson(@Valid @ModelAttribute("operation") OperationEntity operationEntity, BindingResult result,
 			Model model, RedirectAttributes attribute) {
+
+		if (result.hasErrors()) {
+			model.addAttribute("titleTable", "Nueva Operación");
+			model.addAttribute("action", "CREATE");
+			model.addAttribute("person", personEntity);
+			model.addAttribute("operation", operationEntity);
+			model.addAttribute("listTypeOperation", Type.values());
+
+			return "budgetManager/addOperation";
+		}
 
 		operationService.saveOperation(operationEntity);
 		attribute.addFlashAttribute("success", "Operación registrada con éxito!");

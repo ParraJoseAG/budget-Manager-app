@@ -1,5 +1,6 @@
 package com.alkemy.java.budgetManager.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -23,7 +24,10 @@ public interface IOperationRepository extends JpaRepository<OperationEntity, Lon
 	@Query(value = "SELECT * FROM operations WHERE person_id = :idPerson AND type='1' ORDER BY date DESC", nativeQuery = true)
 	Page<OperationEntity> findAllOperationExpenses(@Param("idPerson") Long id, Pageable pageable);
 
-	@Query(value = "SELECT type, SUM(amount) FROM operations WHERE person_id = :idPerson GROUP BY type ORDER BY `operations`.`type`", nativeQuery = true)
-	List<Object[]> totalIngressExpenses(@Param("idPerson") Long id);
+	@Query(value = "SELECT SUM(amount) AS totalIngress FROM operations WHERE person_id = :idPerson AND type='0'", nativeQuery = true)
+	BigDecimal totalIngress(@Param("idPerson") Long id);
+
+	@Query(value = "SELECT SUM(amount) AS totalExpenses FROM operations WHERE person_id = :idPerson AND type='1'", nativeQuery = true)
+	BigDecimal totalExpenses(@Param("idPerson") Long id);
 
 }

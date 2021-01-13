@@ -44,7 +44,7 @@
 
 						<div class="form-group row">
 							<label class="col-md-2" for="amount">MONTO:</label> <input
-								class="form-control form-control-sm col-md-4"
+								type="number" class="form-control form-control-sm col-md-4"
 								th:field="*{amount}" placeholder="Monto" /> <small
 								class="form-text text-danger"
 								th:if="${#fields.hasErrors('amount')}" th:errors=*{amount}>

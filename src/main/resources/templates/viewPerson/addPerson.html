@@ -35,7 +35,7 @@
 								th:field="*{photo}" /><label class="col-md-2" for="name">NOMBRES:</label>
 							<input type="text" th:field="*{name}"
 								class="form-control form-control-sm col-md-4"
-								placeholder="Nombres de la persona" /> &nbsp;<small
+								placeholder="Nombres" /> &nbsp;<small
 								class="form-text text-danger"
 								th:if="${#fields.hasErrors('name')}" th:errors=*{name}>
 							</small>
@@ -45,24 +45,24 @@
 						<div class="form-group row">
 							<label class="col-md-2" for="surname">APELLIDOS:</label> <input
 								class="form-control form-control-sm col-md-4"
-								th:field="*{surname}" placeholder="Apellidos de la persona" />&nbsp;
-							<small class="form-text text-danger"
+								th:field="*{surname}" placeholder="Apellidos" />&nbsp; <small
+								class="form-text text-danger"
 								th:if="${#fields.hasErrors('surname')}" th:errors=*{surname}>
 							</small>
 						</div>
 						<div class="form-group row">
 							<label class="col-md-2" for="email">EMAIL:</label> <input
 								class="form-control form-control-sm col-md-4"
-								th:field="*{email}" placeholder="Email de la persona" />&nbsp;
-							<small class="form-text text-danger"
+								th:field="*{email}" placeholder="Email" />&nbsp; <small
+								class="form-text text-danger"
 								th:if="${#fields.hasErrors('email')}" th:errors=*{email}>
 							</small>
 						</div>
 
 						<div class="form-group row">
 							<label class="col-md-2" for="age">EDAD:</label> <input
-								class="form-control form-control-sm col-md-4" th:field="*{age}"
-								placeholder="Edad de la persona" />&nbsp; <small
+								type="number" class="form-control form-control-sm col-md-4"
+								th:field="*{age}" placeholder="Edad" />&nbsp; <small
 								class="form-text text-danger"
 								th:if="${#fields.hasErrors('age')}" th:errors=*{age}> </small>
 						</div>
@@ -70,8 +70,8 @@
 						<div class="form-group row">
 							<label class="col-md-2" for="phoneNumber">TELÉFONO:</label> <input
 								class="form-control form-control-sm col-md-4"
-								th:field="*{phoneNumber}" placeholder="Teléfono de la persona" />&nbsp;
-							<small class="form-text text-danger"
+								th:field="*{phoneNumber}" placeholder="Teléfono" />&nbsp; <small
+								class="form-text text-danger"
 								th:if="${#fields.hasErrors('phoneNumber')}"
 								th:errors=*{phoneNumber}> </small>
 						</div>
@@ -79,15 +79,14 @@
 						<div class="form-group row">
 							<label class="col-md-2" for="dni">DNI:</label> <input
 								class="form-control form-control-sm col-md-4" th:field="*{dni}"
-								placeholder="DNI de la persona" />&nbsp; <small
-								class="form-text text-danger"
+								placeholder="DNI" />&nbsp; <small class="form-text text-danger"
 								th:if="${#fields.hasErrors('dni')}" th:errors=*{dni}> </small>
 						</div>
 						<div class="form-group row">
 							<label class="col-md-2" for="direction">DIRECCIÓN:</label> <input
 								class="form-control form-control-sm col-md-4"
-								th:field="*{direction}" placeholder="Dirección de la persona" />&nbsp;
-							<small class="form-text text-danger"
+								th:field="*{direction}" placeholder="Dirección" />&nbsp; <small
+								class="form-text text-danger"
 								th:if="${#fields.hasErrors('direction')}" th:errors=*{direction}>
 							</small>
 						</div>
