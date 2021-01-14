@@ -11,12 +11,14 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +26,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alkemy.java.budgetManager.entities.OperationEntity;
 import com.alkemy.java.budgetManager.entities.PersonEntity;
-import com.alkemy.java.budgetManager.exceptions.PersonNotFound;
 import com.alkemy.java.budgetManager.models.Type;
 import com.alkemy.java.budgetManager.service.IOperationService;
 import com.alkemy.java.budgetManager.service.IPersonService;
@@ -33,7 +34,7 @@ import com.alkemy.java.budgetManager.service.IPersonService;
 @RequestMapping("/operation")
 public class BudgetManagerController {
 
-	private PersonEntity personEntity = null;
+	private PersonEntity personUser;
 
 	@Autowired
 	private IPersonService personService;
@@ -41,23 +42,23 @@ public class BudgetManagerController {
 	@Autowired
 	private IOperationService operationService;
 
-	@GetMapping("/person/{id}")
-	public String home(@PathVariable("id") Long idPerson, Model model, RedirectAttributes attribute)
-			throws PersonNotFound {
+	public BudgetManagerController() {
+		personUser = new PersonEntity();
+	}
 
-		try {
-			personEntity = personService.getPersonById(idPerson);
-		} catch (PersonNotFound e) {
-			attribute.addFlashAttribute("error", e.getMessage());
-			return "redirect:/people";
+	@GetMapping("/person")
+	public String home(Model model, RedirectAttributes attribute) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			personUser = personService.findByUsername(userDetail.getUsername());
 		}
+		List<OperationEntity> listOperationsPerson = operationService.getLastTenOperation(personUser.getId());
 
-		List<OperationEntity> listOperationsPerson = operationService.getLastTenOperation(idPerson);
-
-		BigDecimal balance = operationService.getCurrentBalance(idPerson);
+		BigDecimal balance = operationService.getCurrentBalance(personUser.getId());
 
 		model.addAttribute("operations", listOperationsPerson);
-		model.addAttribute("person", personEntity);
+		model.addAttribute("person", personUser);
 		model.addAttribute("balance", balance);
 		model.addAttribute("titleTable", "Últimas operaciones realizadas");
 		return "budgetManager/homeOperationPerson";
@@ -68,10 +69,9 @@ public class BudgetManagerController {
 
 		OperationEntity operationEntity = new OperationEntity();
 
-		operationEntity.setPerson(personEntity);
+		operationEntity.setPerson(personUser);
 		model.addAttribute("titleTable", "Nueva Operación");
-		model.addAttribute("action", "CREATE");
-		model.addAttribute("person", personEntity);
+		model.addAttribute("person", personUser);
 		model.addAttribute("operation", operationEntity);
 		model.addAttribute("listTypeOperation", Type.values());
 
@@ -84,8 +84,7 @@ public class BudgetManagerController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("titleTable", "Nueva Operación");
-			model.addAttribute("action", "CREATE");
-			model.addAttribute("person", personEntity);
+			model.addAttribute("person", personUser);
 			model.addAttribute("operation", operationEntity);
 			model.addAttribute("listTypeOperation", Type.values());
 
@@ -94,7 +93,7 @@ public class BudgetManagerController {
 
 		operationService.saveOperation(operationEntity);
 		attribute.addFlashAttribute("success", "Operación registrada con éxito!");
-		return "redirect:/operation/person/" + operationEntity.getPerson().getId();
+		return "redirect:/operation/person/";
 	}
 
 	@GetMapping("/person/ingress")
@@ -102,9 +101,9 @@ public class BudgetManagerController {
 			RedirectAttributes attribute) {
 
 		int page = (int) (params.get("page") != null ? (Long.valueOf(params.get("page").toString()) - 1) : 0);
-		PageRequest pageRequest = PageRequest.of(page, 5);
+		PageRequest pageRequest = PageRequest.of(page, 10);
 
-		Page<OperationEntity> pageOperationEntity = operationService.getListOperationIngress(personEntity.getId(),
+		Page<OperationEntity> pageOperationEntity = operationService.getListOperationIngress(personUser.getId(),
 				pageRequest);
 
 		int totalPage = pageOperationEntity.getTotalPages();
@@ -117,10 +116,10 @@ public class BudgetManagerController {
 
 		List<OperationEntity> listOperationsPersonIngress = pageOperationEntity.getContent();
 
-		BigDecimal ingress = operationService.getTotalIngress(personEntity.getId());
+		BigDecimal ingress = operationService.getTotalIngress(personUser.getId());
 
 		model.addAttribute("operations", listOperationsPersonIngress);
-		model.addAttribute("person", personEntity);
+		model.addAttribute("person", personUser);
 		model.addAttribute("ingress", ingress);
 		model.addAttribute("current", page + 1);
 		model.addAttribute("next", page + 2);
@@ -135,9 +134,9 @@ public class BudgetManagerController {
 			RedirectAttributes attribute) {
 
 		int page = (int) (params.get("page") != null ? (Long.valueOf(params.get("page").toString()) - 1) : 0);
-		PageRequest pageRequest = PageRequest.of(page, 5);
+		PageRequest pageRequest = PageRequest.of(page, 10);
 
-		Page<OperationEntity> pageOperationEntity = operationService.getListOperationExpenses(personEntity.getId(),
+		Page<OperationEntity> pageOperationEntity = operationService.getListOperationExpenses(personUser.getId(),
 				pageRequest);
 
 		int totalPage = pageOperationEntity.getTotalPages();
@@ -149,10 +148,10 @@ public class BudgetManagerController {
 		}
 
 		List<OperationEntity> listOperationsPersonExpenses = pageOperationEntity.getContent();
-		BigDecimal expenses = operationService.getTotalExpenses(personEntity.getId());
+		BigDecimal expenses = operationService.getTotalExpenses(personUser.getId());
 
 		model.addAttribute("operations", listOperationsPersonExpenses);
-		model.addAttribute("person", personEntity);
+		model.addAttribute("person", personUser);
 		model.addAttribute("expenses", expenses);
 		model.addAttribute("current", page + 1);
 		model.addAttribute("next", page + 2);
