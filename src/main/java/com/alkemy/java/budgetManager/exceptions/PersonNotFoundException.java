@@ -4,9 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class PersonNotFound extends RuntimeException {
+public class PersonNotFoundException extends RuntimeException {
 
-	public PersonNotFound(String menssage) {
+	public PersonNotFoundException(String menssage) {
 		super(menssage);
 	}
+
+	private static final long serialVersionUID = 1L;
 }

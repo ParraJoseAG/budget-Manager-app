@@ -18,16 +18,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "people")
 public class PersonEntity implements Serializable {
-
-	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +38,6 @@ public class PersonEntity implements Serializable {
 	@Pattern(regexp = "[A-Za-zÁÉÍÓÚáéíóúñÑ\s]*")
 	private String surname;
 	@Column
-	@Min(15)
-	@Max(100)
 	private int age;
 	@Column
 	@Pattern(regexp = "^[0-9]*$")
@@ -61,10 +55,12 @@ public class PersonEntity implements Serializable {
 	@Column(columnDefinition = "LONGBLOB")
 	private String photo;
 	@Column
+	@NotBlank
 	private String password;
 	@Column
 	private boolean enabled;
 	@Column
+	@NotBlank
 	private String username;
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "authorities_users", joinColumns = @JoinColumn(name = "person_id"), inverseJoinColumns = @JoinColumn(name = "authority_id"))
@@ -184,4 +180,5 @@ public class PersonEntity implements Serializable {
 		this.operations = operations;
 	}
 
+	private static final long serialVersionUID = 1L;
 }
