@@ -18,7 +18,6 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -44,8 +43,6 @@ public class OperationEntity implements Serializable {
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Temporal(TemporalType.DATE)
-	@NotNull
-	@Past
 	private Date date;
 	@Column
 	@NotNull

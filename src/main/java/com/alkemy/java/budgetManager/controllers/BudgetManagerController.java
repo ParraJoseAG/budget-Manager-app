@@ -47,12 +47,14 @@ public class BudgetManagerController {
 	}
 
 	@GetMapping("/person")
-	public String home(Model model, RedirectAttributes attribute) {
+	public String homePerson(Model model, RedirectAttributes attribute) {
+
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
 			personUser = personService.findByUsername(userDetail.getUsername());
 		}
+
 		List<OperationEntity> listOperationsPerson = operationService.getLastTenOperation(personUser.getId());
 
 		BigDecimal balance = operationService.getCurrentBalance(personUser.getId());
@@ -65,7 +67,7 @@ public class BudgetManagerController {
 	}
 
 	@GetMapping("/addOperation")
-	public String addPerson(Model model) {
+	public String addOperation(Model model) {
 
 		OperationEntity operationEntity = new OperationEntity();
 
