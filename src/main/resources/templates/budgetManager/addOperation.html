@@ -24,7 +24,6 @@
 			<div class="card text-center">
 				<div class="card-header text-center">
 					<h2 th:text="${titleTable}"></h2>
-
 				</div>
 
 				<div class="card-body">
@@ -68,18 +67,12 @@
 							</small>
 						</div>
 
-						<div th:if="${action =='CREATE'}" class="card-footer">
+						<div class="card-footer">
 							<input type="submit" class="btn btn-primary btn-sm"
 								value="Guardar" /> <input type="reset"
 								class="btn btn-primary btn-sm" value="Restaurar" /> <a
 								type="cancel" class="btn btn-primary btn-sm"
-								th:href=@{/operation/person/{id}(id=${person.id})}>Cancelar</a>
-						</div>
-						<div th:unless="${action =='CREATE'}" class="card-footer">
-							<input type="submit" class="btn btn-primary btn-sm"
-								value="Guardar" /> <a type="cancel"
-								class="btn btn-primary btn-sm"
-								th:href=@{/operation/person/{id}(id=${person.id})}>Cancelar</a>
+								th:href=@{/operation/person/}>Cancelar</a>
 						</div>
 					</form>
 
@@ -90,8 +83,6 @@
 	<footer class="mt-5">
 		<div th:insert="/templateOperation  :: footer"></div>
 	</footer>
-
 	<div th:insert="/templateOperation  :: JavaScriptBootstrap"></div>
-
 </body>
 </html>

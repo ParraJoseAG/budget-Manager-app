@@ -1,6 +1,7 @@
 package com.alkemy.java.budgetManager.models;
 
 import java.util.List;
+import java.util.Set;
 
 public class Person {
 
@@ -13,6 +14,10 @@ public class Person {
 	private String phoneNumber;
 	private String direction;
 	private String photo;
+	private String password;
+	private boolean enabled;
+	private String username;
+	private Set<Authority> authority;
 	private List<Operation> operations;
 
 	public Long getId() {
@@ -85,6 +90,38 @@ public class Person {
 
 	public void setPhoto(String photo) {
 		this.photo = photo;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public Set<Authority> getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(Set<Authority> authority) {
+		this.authority = authority;
 	}
 
 	public List<Operation> getOperations() {

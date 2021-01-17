@@ -23,6 +23,11 @@
 	<div class="container text-center mt-3" th:if="${operations.isEmpty()}">
 		<h1 class="alert alert-info" role="alert">No hay operaciones
 			registradas</h1>
+		<div class="container mt-2">
+			<a class="btn btn-primary btn-sm"
+				th:href="@{/operation/addOperation}" title="Agregar Operación"><i
+				class="fa fa-plus-square" aria-hidden="true"></i> Agregar Operación</a>
+		</div>
 	</div>
 	<div th:if="${!operations.isEmpty()}">
 		<div class="container mt-5">

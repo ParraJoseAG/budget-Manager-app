@@ -25,11 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alkemy.java.budgetManager.entities.PersonEntity;
-import com.alkemy.java.budgetManager.exceptions.PersonNotFound;
+import com.alkemy.java.budgetManager.exceptions.PersonNotFoundException;
 import com.alkemy.java.budgetManager.service.IPersonService;
 
 @Controller
-@RequestMapping({ "/people", "/" })
+@RequestMapping("/people")
 public class PersonController {
 
 	@Autowired
@@ -74,7 +74,7 @@ public class PersonController {
 
 	@PostMapping("/savePerson")
 	public String savePerson(@Valid @ModelAttribute("person") PersonEntity personEntity, BindingResult result,
-			Model model, @RequestParam("file") MultipartFile image, RedirectAttributes attribute) {
+			Model model, @RequestParam("file") MultipartFile image, RedirectAttributes attribute) throws Exception {
 
 		if (result.hasErrors()) {
 			model.addAttribute("titleTable", "Registrar persona en la APP");
@@ -103,11 +103,11 @@ public class PersonController {
 
 	@GetMapping("/edit/{id}")
 	public String editPerson(@PathVariable("id") Long idPerson, Model model, RedirectAttributes attribute)
-			throws PersonNotFound {
+			throws PersonNotFoundException {
 		PersonEntity personEntity = null;
 		try {
 			personEntity = personService.getPersonById(idPerson);
-		} catch (PersonNotFound e) {
+		} catch (PersonNotFoundException e) {
 			attribute.addFlashAttribute("error", e.getMessage());
 			return "redirect:/people";
 		}
@@ -119,11 +119,11 @@ public class PersonController {
 
 	@GetMapping("/delete/{id}")
 	public String deletePerson(@PathVariable("id") Long idPerson, Model model, RedirectAttributes attribute)
-			throws PersonNotFound {
+			throws PersonNotFoundException {
 		PersonEntity personEntity = null;
 		try {
 			personEntity = personService.getPersonById(idPerson);
-		} catch (PersonNotFound e) {
+		} catch (PersonNotFoundException e) {
 			attribute.addFlashAttribute("error", e.getMessage());
 			return "redirect:/people";
 		}
