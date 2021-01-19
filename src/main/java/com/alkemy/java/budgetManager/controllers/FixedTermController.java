@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.alkemy.java.budgetManager.Utils.FixedTermUtil;
 import com.alkemy.java.budgetManager.entities.FixedTermEntity;
 import com.alkemy.java.budgetManager.entities.OperationEntity;
+import com.alkemy.java.budgetManager.exceptions.FixedTermNotFoundException;
 import com.alkemy.java.budgetManager.models.Type;
 import com.alkemy.java.budgetManager.service.IFixedTermService;
 import com.alkemy.java.budgetManager.service.IOperationService;
@@ -52,7 +53,14 @@ public class FixedTermController {
 
 		FixedTermEntity fixedTerm = new FixedTermEntity();
 		fixedTerm.setPerson(personService.getPersonById(idUser));
+		fixedTerm.setAmountGenerated(new BigDecimal(0));
+
 		List<FixedTermEntity> listFixedTerm = fixedTermService.getListFixedTermPerson(idUser);
+
+		for (FixedTermEntity fixedTermEntity : listFixedTerm) {
+			fixedTermEntity.setAmountGenerated(fixedTermUtil.getAmountGenerated(fixedTermEntity).setScale(2));
+		}
+
 		BigDecimal balance = operationService.getCurrentBalance(idUser);
 
 		model.addAttribute("listDepositsFixed", listFixedTerm);
@@ -65,10 +73,8 @@ public class FixedTermController {
 	}
 
 	@PostMapping("/saveFixedTerm")
-	public String saveFixedTerm(@ModelAttribute("fixedTerm") FixedTermEntity fixedTerm, RedirectAttributes attribute) {
+	public String saveFixedTerm(@ModelAttribute FixedTermEntity fixedTerm, Model model, RedirectAttributes attribute) {
 
-		Long idUser = fixedTerm.getPerson().getId();
-		fixedTerm.setAmountGenerated(new BigDecimal(0));
 		fixedTerm.setStartDate(new Date());
 
 		try {
@@ -78,40 +84,35 @@ public class FixedTermController {
 		} catch (Exception e) {
 			attribute.addFlashAttribute("error",
 					"No tiene suficiente dinero disponible en su balance para realizar la operación!");
-			return "redirect:/fixedTerm/person/" + idUser;
+			return "redirect:/fixedTerm/person/";
 		}
 
-		OperationEntity operationFixedTerm = new OperationEntity();
-		operationFixedTerm.setConcept("INVERSIÓN A PLAZO FIJO");
-		operationFixedTerm.setAmount(fixedTerm.getAmountFixedTerm());
-		operationFixedTerm.setDate(new Date());
-		operationFixedTerm.setType(Type.EXPENSES);
-		operationFixedTerm.setPerson(fixedTerm.getPerson());
+		OperationEntity operationFixedTerm = fixedTermUtil.getOperation(Type.EXPENSES, fixedTerm);
 
 		operationService.saveOperation(operationFixedTerm);
 		attribute.addFlashAttribute("success", "Operación exitosa!");
-		return "redirect:/fixedTerm/person/" + idUser;
+		return "redirect:/fixedTerm/person/";
 	}
 
 	@GetMapping("/endFixedTerm/{id}")
 	public String endFixedTerm(@PathVariable("id") Long idFixed, Model model, RedirectAttributes attribute) {
 
-		FixedTermEntity fixedTerm = fixedTermService.getByIdFixedTerm(idFixed);
-		Long idUser = fixedTerm.getPerson().getId();
+		FixedTermEntity fixedTerm = null;
 
-		BigDecimal amountGenerated = fixedTermUtil.getAmountGenerated(fixedTerm);
+		try {
+			fixedTerm = fixedTermService.getByIdFixedTerm(idFixed);
+		} catch (FixedTermNotFoundException e) {
+			attribute.addFlashAttribute("success", e.getMessage());
+			return "redirect:/fixedTerm/person/";
+		}
 
-		OperationEntity operationFixedTerm = new OperationEntity();
-		operationFixedTerm.setConcept("DEPOSITO DE LA INVERSIÓN");
-		operationFixedTerm.setAmount(amountGenerated);
-		operationFixedTerm.setDate(new Date());
-		operationFixedTerm.setType(Type.INGRESS);
-		operationFixedTerm.setPerson(fixedTerm.getPerson());
+		OperationEntity operationFixedTerm = fixedTermUtil.getOperation(Type.INGRESS, fixedTerm);
 
 		fixedTermService.deleteByIdFixedTerm(idFixed);
 		operationService.saveOperation(operationFixedTerm);
+
 		attribute.addFlashAttribute("success", "Deposito en cuenta por plazo fijo exitoso!");
-		return "redirect:/fixedTerm/person/" + idUser;
+		return "redirect:/fixedTerm/person/";
 
 	}
 }
