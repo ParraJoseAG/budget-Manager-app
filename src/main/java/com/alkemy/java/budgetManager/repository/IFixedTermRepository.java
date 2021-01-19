@@ -10,6 +10,6 @@ import com.alkemy.java.budgetManager.entities.FixedTermEntity;
 
 public interface IFixedTermRepository extends JpaRepository<FixedTermEntity, Long> {
 
-	@Query(value = "SELECT * FROM deposits_fixed WHERE person_id = :idPerson ORDER BY startDate DESC", nativeQuery = true)
+	@Query(value = "SELECT * FROM deposits_fixed WHERE person_id = :idPerson ORDER BY start_date DESC", nativeQuery = true)
 	List<FixedTermEntity> findAllFixedTerm(@Param("idPerson") Long id);
 }
