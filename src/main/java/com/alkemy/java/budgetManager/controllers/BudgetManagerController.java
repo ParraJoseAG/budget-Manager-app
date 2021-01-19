@@ -42,10 +42,6 @@ public class BudgetManagerController {
 	@Autowired
 	private IOperationService operationService;
 
-	public BudgetManagerController() {
-		personUser = new PersonEntity();
-	}
-
 	@GetMapping("/person")
 	public String homePerson(Model model, RedirectAttributes attribute) {
 
@@ -54,9 +50,7 @@ public class BudgetManagerController {
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
 			personUser = personService.findByUsername(userDetail.getUsername());
 		}
-
 		List<OperationEntity> listOperationsPerson = operationService.getLastTenOperation(personUser.getId());
-
 		BigDecimal balance = operationService.getCurrentBalance(personUser.getId());
 
 		model.addAttribute("operations", listOperationsPerson);
@@ -163,4 +157,33 @@ public class BudgetManagerController {
 		return "budgetManager/operationsExpenses";
 	}
 
+	@GetMapping("/person/listUsers")
+	public String listPeople(@RequestParam Map<String, Object> params, Model model) {
+
+		int page = (int) (params.get("page") != null ? (Long.valueOf(params.get("page").toString()) - 1) : 0);
+		PageRequest pageRequest = PageRequest.of(page, 10);
+
+		Page<PersonEntity> pagePersonUsers = personService.getListPerson(pageRequest);
+
+		int totalPage = pagePersonUsers.getTotalPages();
+
+		if (totalPage > 0) {
+
+			List<Long> pages = LongStream.rangeClosed(1, totalPage).boxed().collect(Collectors.toList());
+			model.addAttribute("pages", pages);
+		}
+
+		List<PersonEntity> listPersonUsers = pagePersonUsers.getContent().stream()
+				.filter(user -> user.getId().longValue() != this.personUser.getId().longValue())
+				.collect(Collectors.toList());
+
+		model.addAttribute("listUsers", listPersonUsers);
+		model.addAttribute("person", personUser);
+		model.addAttribute("titleTable", "Usuarios registradas en la App");
+		model.addAttribute("current", page + 1);
+		model.addAttribute("next", page + 2);
+		model.addAttribute("previous", page);
+		model.addAttribute("last", totalPage);
+		return "budgetManager/listUsers";
+	}
 }

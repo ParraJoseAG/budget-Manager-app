@@ -27,13 +27,15 @@
 					<li class="nav-item"><a class="nav-link"
 						th:href="@{/operation/person/}">MIS OPERACIONES</a></li>
 					<li class="nav-item dropdown"><a
-						class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-						role="button" data-toggle="dropdown" aria-haspopup="true"
-						aria-expanded="false"> TIPOS DE OPERACIONES </a>
+						class="nav-link dropdown-toggle" id="navbarDropdown" role="button"
+						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							TIPOS DE OPERACIONES </a>
 						<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 							<a class="dropdown-item" th:href="@{/operation/person/ingress}">INGRESOS</a>
 							<a class="dropdown-item" th:href="@{/operation/person/expenses}">EGRESOS</a>
 						</div></li>
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/operation/person/listUsers}">LISTA DE USUARIOS</a></li>
 				</ul>
 
 			</div>
@@ -46,10 +48,9 @@
 							th:src="*{'data:image/jpeg;base64,'+{person.photo}}" width="30"
 							height="30" class="d-inline-block align-top">
 					</a></li>
-					<li class="nav-item"><a class="nav-link text-primary" th:href="@{#}"><span
-							th:text="${person.name}"></span></a></li>
-					<li class="nav-item"><a
-						class="btn btn-outline-primary btn-sm"
+					<li class="nav-item"><a class="nav-link text-primary"
+						th:href="@{#}"><span th:text="${person.name}"></span></a></li>
+					<li class="nav-item"><a class="btn btn-outline-primary btn-sm"
 						th:href="@{/logout}">LOGOUT</a></li>
 				</ul>
 
