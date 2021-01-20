@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.alkemy.java.budgetManager.Utils.FixedTermUtil;
 import com.alkemy.java.budgetManager.entities.FixedTermEntity;
 import com.alkemy.java.budgetManager.entities.OperationEntity;
+import com.alkemy.java.budgetManager.entities.PersonEntity;
 import com.alkemy.java.budgetManager.exceptions.FixedTermNotFoundException;
 import com.alkemy.java.budgetManager.models.Type;
 import com.alkemy.java.budgetManager.service.IFixedTermService;
@@ -29,6 +30,8 @@ import com.alkemy.java.budgetManager.service.IPersonService;
 @Controller
 @RequestMapping({ "/fixedTerm/person/{idUser}", "/fixedTerm/person/" })
 public class FixedTermController {
+
+	private PersonEntity personUser;
 
 	@Autowired
 	private IPersonService personService;
@@ -48,17 +51,20 @@ public class FixedTermController {
 		if (idUser == null) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
-			idUser = personService.findByUsername(userDetail.getUsername()).getId();
+			personUser = personService.findByUsername(userDetail.getUsername());
+			idUser = personUser.getId();
+		} else {
+			personUser = personService.getPersonById(idUser);
 		}
 
 		FixedTermEntity fixedTerm = new FixedTermEntity();
-		fixedTerm.setPerson(personService.getPersonById(idUser));
+		fixedTerm.setPerson(personUser);
 		fixedTerm.setAmountGenerated(new BigDecimal(0));
 
 		List<FixedTermEntity> listFixedTerm = fixedTermService.getListFixedTermPerson(idUser);
 
 		for (FixedTermEntity fixedTermEntity : listFixedTerm) {
-			fixedTermEntity.setAmountGenerated(fixedTermUtil.getAmountGenerated(fixedTermEntity).setScale(2));
+			fixedTermEntity.setAmountGenerated(fixedTermUtil.getAmountGenerated(fixedTermEntity));
 		}
 
 		BigDecimal balance = operationService.getCurrentBalance(idUser);
@@ -66,7 +72,7 @@ public class FixedTermController {
 		model.addAttribute("listDepositsFixed", listFixedTerm);
 		model.addAttribute("titleTable", "Depositos a Plazo Fijo");
 		model.addAttribute("balance", balance);
-		model.addAttribute("person", personService.getPersonById(idUser));
+		model.addAttribute("person", personUser);
 		model.addAttribute("fixedTerm", fixedTerm);
 
 		return "fixedTerm/depositsFixed";
@@ -102,7 +108,7 @@ public class FixedTermController {
 		try {
 			fixedTerm = fixedTermService.getByIdFixedTerm(idFixed);
 		} catch (FixedTermNotFoundException e) {
-			attribute.addFlashAttribute("success", e.getMessage());
+			attribute.addFlashAttribute("error", e.getMessage());
 			return "redirect:/fixedTerm/person/";
 		}
 
