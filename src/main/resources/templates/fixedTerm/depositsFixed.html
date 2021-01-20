@@ -55,9 +55,11 @@
 				</thead>
 				<tbody>
 					<tr th:each="fixed:${listDepositsFixed}">
-						<td th:text="${fixed.amountFixedTerm}"></td>
+						<td
+							th:text="${#numbers.formatDecimal(fixed.amountFixedTerm == null ? 0 : fixed.amountFixedTerm, 0, 4)}"></td>
 						<td th:text="${fixed.startDate}"></td>
-						<td th:text="${fixed.amountGenerated}"></td>
+						<td
+							th:text="${#numbers.formatDecimal(fixed.amountGenerated == null ? 0 : fixed.amountGenerated, 0, 4)}"></td>
 						<td><a class="btn btn-danger btn-sm"
 							th:href="@{/fixedTerm/person/endFixedTerm/{id} (id=${fixed.id})}"
 							title="Finalizar plazo fijo"
