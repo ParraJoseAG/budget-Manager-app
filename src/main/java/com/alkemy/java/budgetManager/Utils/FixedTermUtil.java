@@ -40,7 +40,7 @@ public class FixedTermUtil {
 			operationFixedTerm.setType(Type.EXPENSES);
 		} else {
 
-			operationFixedTerm.setConcept("DEPOSITO DE LA INVERSIÓN");
+			operationFixedTerm.setConcept("DEPOSITO A LA INVERSIÓN PLAZO FIJO");
 			operationFixedTerm.setAmount(getAmountGenerated(fixedTerm));
 			operationFixedTerm.setType(Type.INGRESS);
 		}

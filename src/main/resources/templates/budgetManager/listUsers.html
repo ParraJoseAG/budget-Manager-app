@@ -32,28 +32,21 @@
 			<table class="table table-hover">
 				<thead>
 					<tr>
-						<th scope="col">FOTO</th>
 						<th scope="col">NOMBRE</th>
 						<th scope="col">APELLIDO</th>
 						<th scope="col">EMAIL</th>
-						<th scope="col">DNI</th>
-						<th scope="col">TELÉFONO</th>
-						<th scope="col">DIRECCIÓN</th>
+						<th scope="col">ENVIAR DINERO</th>
 					</tr>
 				</thead>
 				<tbody>
-
 					<tr th:each="user:${listUsers}">
-						<td><div th:if="*{user.photo!=''} AND *{user.photo!=null}">
-								<img th:src="*{'data:image/jpeg;base64,'+{user.photo}}"
-									style="width: 50px; height: 50px;">
-							</div></td>
 						<td th:text="${user.name}"></td>
 						<td th:text="${user.surname}"></td>
 						<td th:text="${user.email}"></td>
-						<td th:text="${user.dni}"></td>
-						<td th:text="${user.phoneNumber}"></td>
-						<td th:text="${user.direction}"></td>
+						<td><a class="btn btn-success btn-sm"
+							th:href="@{/operation/sendingMoney/{id} (id=${user.id})}"
+							title="Enviar dinero"><i class="fa fa-money"
+								aria-hidden="true"></i> Enviar dinero</a></td>
 					</tr>
 				</tbody>
 			</table>

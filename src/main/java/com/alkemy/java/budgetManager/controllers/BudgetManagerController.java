@@ -11,21 +11,21 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.alkemy.java.budgetManager.Utils.PersonAuthenticationUtil;
 import com.alkemy.java.budgetManager.entities.OperationEntity;
 import com.alkemy.java.budgetManager.entities.PersonEntity;
+import com.alkemy.java.budgetManager.exceptions.PersonNotFoundException;
 import com.alkemy.java.budgetManager.models.Type;
 import com.alkemy.java.budgetManager.service.IOperationService;
 import com.alkemy.java.budgetManager.service.IPersonService;
@@ -42,16 +42,17 @@ public class BudgetManagerController {
 	@Autowired
 	private IOperationService operationService;
 
-	@GetMapping("/person")
-	public String homePerson(Model model, RedirectAttributes attribute) {
+	@Autowired
+	private PersonAuthenticationUtil personAuthenticationUtil;
 
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null) {
-			UserDetails userDetail = (UserDetails) auth.getPrincipal();
-			personUser = personService.findByUsername(userDetail.getUsername());
-		}
-		List<OperationEntity> listOperationsPerson = operationService.getLastTenOperation(personUser.getId());
-		BigDecimal balance = operationService.getCurrentBalance(personUser.getId());
+	@GetMapping("/person")
+	public String homeOperationsPerson(Model model, RedirectAttributes attribute) {
+
+		personUser = personAuthenticationUtil.personAuthentication();
+		Long idUser = personUser.getId();
+
+		List<OperationEntity> listOperationsPerson = operationService.getLastTenOperation(idUser);
+		BigDecimal balance = operationService.getCurrentBalance(idUser);
 
 		model.addAttribute("operations", listOperationsPerson);
 		model.addAttribute("person", personUser);
@@ -62,6 +63,8 @@ public class BudgetManagerController {
 
 	@GetMapping("/addOperation")
 	public String addOperation(Model model) {
+
+		personUser = personAuthenticationUtil.personAuthentication();
 
 		OperationEntity operationEntity = new OperationEntity();
 
@@ -75,8 +78,10 @@ public class BudgetManagerController {
 	}
 
 	@PostMapping("/saveOperation")
-	public String savePerson(@Valid @ModelAttribute("operation") OperationEntity operationEntity, BindingResult result,
-			Model model, RedirectAttributes attribute) {
+	public String saveOperation(@Valid @ModelAttribute("operation") OperationEntity operationEntity,
+			BindingResult result, Model model, RedirectAttributes attribute) {
+
+		personUser = personAuthenticationUtil.personAuthentication();
 
 		if (result.hasErrors()) {
 			model.addAttribute("titleTable", "Nueva Operación");
@@ -93,14 +98,16 @@ public class BudgetManagerController {
 	}
 
 	@GetMapping("/person/ingress")
-	public String OperationsIngress(@RequestParam Map<String, Object> params, Model model,
+	public String operationsIngress(@RequestParam Map<String, Object> params, Model model,
 			RedirectAttributes attribute) {
+
+		personUser = personAuthenticationUtil.personAuthentication();
 
 		int page = (int) (params.get("page") != null ? (Long.valueOf(params.get("page").toString()) - 1) : 0);
 		PageRequest pageRequest = PageRequest.of(page, 10);
+		Long idUser = personUser.getId();
 
-		Page<OperationEntity> pageOperationEntity = operationService.getListOperationIngress(personUser.getId(),
-				pageRequest);
+		Page<OperationEntity> pageOperationEntity = operationService.getListOperationIngress(idUser, pageRequest);
 
 		int totalPage = pageOperationEntity.getTotalPages();
 
@@ -111,8 +118,7 @@ public class BudgetManagerController {
 		}
 
 		List<OperationEntity> listOperationsPersonIngress = pageOperationEntity.getContent();
-
-		BigDecimal ingress = operationService.getTotalIngress(personUser.getId());
+		BigDecimal ingress = operationService.getTotalIngress(idUser);
 
 		model.addAttribute("operations", listOperationsPersonIngress);
 		model.addAttribute("person", personUser);
@@ -126,14 +132,16 @@ public class BudgetManagerController {
 	}
 
 	@GetMapping("/person/expenses")
-	public String OperationsExpenses(@RequestParam Map<String, Object> params, Model model,
+	public String operationsExpenses(@RequestParam Map<String, Object> params, Model model,
 			RedirectAttributes attribute) {
+
+		personUser = personAuthenticationUtil.personAuthentication();
 
 		int page = (int) (params.get("page") != null ? (Long.valueOf(params.get("page").toString()) - 1) : 0);
 		PageRequest pageRequest = PageRequest.of(page, 10);
+		Long idUser = personUser.getId();
 
-		Page<OperationEntity> pageOperationEntity = operationService.getListOperationExpenses(personUser.getId(),
-				pageRequest);
+		Page<OperationEntity> pageOperationEntity = operationService.getListOperationExpenses(idUser, pageRequest);
 
 		int totalPage = pageOperationEntity.getTotalPages();
 
@@ -144,7 +152,7 @@ public class BudgetManagerController {
 		}
 
 		List<OperationEntity> listOperationsPersonExpenses = pageOperationEntity.getContent();
-		BigDecimal expenses = operationService.getTotalExpenses(personUser.getId());
+		BigDecimal expenses = operationService.getTotalExpenses(idUser);
 
 		model.addAttribute("operations", listOperationsPersonExpenses);
 		model.addAttribute("person", personUser);
@@ -160,8 +168,11 @@ public class BudgetManagerController {
 	@GetMapping("/person/listUsers")
 	public String listPeople(@RequestParam Map<String, Object> params, Model model) {
 
+		personUser = personAuthenticationUtil.personAuthentication();
+
 		int page = (int) (params.get("page") != null ? (Long.valueOf(params.get("page").toString()) - 1) : 0);
 		PageRequest pageRequest = PageRequest.of(page, 10);
+		Long idUser = personUser.getId();
 
 		Page<PersonEntity> pagePersonUsers = personService.getListPerson(pageRequest);
 
@@ -174,8 +185,7 @@ public class BudgetManagerController {
 		}
 
 		List<PersonEntity> listPersonUsers = pagePersonUsers.getContent().stream()
-				.filter(user -> user.getId().longValue() != this.personUser.getId().longValue())
-				.collect(Collectors.toList());
+				.filter(user -> user.getId().longValue() != idUser.longValue()).collect(Collectors.toList());
 
 		model.addAttribute("listUsers", listPersonUsers);
 		model.addAttribute("person", personUser);
@@ -186,4 +196,51 @@ public class BudgetManagerController {
 		model.addAttribute("last", totalPage);
 		return "budgetManager/listUsers";
 	}
+
+	@GetMapping("/sendingMoney/{id}")
+	public String sendingMoney(@PathVariable("id") Long idUserSend, Model model, RedirectAttributes attribute) {
+		personUser = personAuthenticationUtil.personAuthentication();
+
+		OperationEntity operationEntity = new OperationEntity();
+		PersonEntity personBeneficiary = null;
+		try {
+			personBeneficiary = personService.getPersonById(idUserSend);
+		} catch (PersonNotFoundException e) {
+			attribute.addFlashAttribute("error", e.getMessage());
+			return "redirect:/operation/person/listUsers/";
+		}
+
+		operationEntity.setPerson(personBeneficiary);
+
+		model.addAttribute("operation", operationEntity);
+		model.addAttribute("titleTable",
+				"Enviar dinero a " + personBeneficiary.getName() + " " + personBeneficiary.getSurname());
+		model.addAttribute("person", personUser);
+
+		return "budgetManager/sendMoney";
+	}
+
+	@PostMapping("/saveSendingMoney")
+	public String saveSendMoney(@ModelAttribute("operation") OperationEntity operationEntity, Model model,
+			RedirectAttributes attribute) {
+
+		personUser = personAuthenticationUtil.personAuthentication();
+		BigDecimal receiveMoneyPotential = operationEntity.getAmount();
+
+		OperationEntity operationUser = new OperationEntity();
+		operationUser.setAmount(receiveMoneyPotential);
+		operationUser.setPerson(personUser);
+
+		try {
+			operationService.saveSendingMoney(operationUser);
+		} catch (Exception e) {
+			attribute.addFlashAttribute("error",
+					"No tiene suficiente dinero disponible en su balance para enviar la cantidad solicitada!");
+			return "redirect:/operation/person/listUsers/";
+		}
+		operationService.saveReceiveMoney(operationEntity);
+		attribute.addFlashAttribute("success", "El envio de dinero ha sido exitoso!");
+		return "redirect:/operation/person/";
+	}
+
 }
