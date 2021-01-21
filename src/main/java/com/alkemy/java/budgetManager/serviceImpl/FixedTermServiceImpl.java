@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alkemy.java.budgetManager.entities.FixedTermEntity;
+import com.alkemy.java.budgetManager.entities.PersonEntity;
 import com.alkemy.java.budgetManager.exceptions.FixedTermNotFoundException;
 import com.alkemy.java.budgetManager.repository.IFixedTermRepository;
 import com.alkemy.java.budgetManager.service.IFixedTermService;
@@ -31,7 +32,11 @@ public class FixedTermServiceImpl implements IFixedTermService {
 	@Override
 	public void saveFixedTerm(FixedTermEntity fixedTerm) throws Exception {
 
-		BigDecimal amountAvailable = operationService.getCurrentBalance(fixedTerm.getPerson().getId());
+		PersonEntity person = new PersonEntity();
+		person = fixedTerm.getPerson();
+		Long idPerson = person.getId();
+
+		BigDecimal amountAvailable = operationService.getCurrentBalance(idPerson);
 		BigDecimal amountFixedTerm = fixedTerm.getAmountFixedTerm();
 
 		if (amountFixedTerm.compareTo(amountAvailable) > 0) {
@@ -44,20 +49,20 @@ public class FixedTermServiceImpl implements IFixedTermService {
 	@Override
 	public FixedTermEntity getByIdFixedTerm(Long id) throws FixedTermNotFoundException {
 
-		Optional<FixedTermEntity> fixedTerm = fixedTermRepository.findById(id);
+		Optional<FixedTermEntity> optionalfixedTerm = fixedTermRepository.findById(id);
 
-		if (fixedTerm.isEmpty()) {
+		if (optionalfixedTerm.isEmpty()) {
 			throw new FixedTermNotFoundException("Plazo fijo no existe");
 		}
 
-		return fixedTerm.get();
+		return optionalfixedTerm.get();
 	}
 
 	@Override
 	public void deleteByIdFixedTerm(Long id) {
-		Optional<FixedTermEntity> fixedTerm = fixedTermRepository.findById(id);
+		Optional<FixedTermEntity> optionalfixedTerm = fixedTermRepository.findById(id);
 
-		if (fixedTerm.isEmpty()) {
+		if (optionalfixedTerm.isEmpty()) {
 			throw new FixedTermNotFoundException("Plazo fijo no existe");
 		}
 		fixedTermRepository.deleteById(id);

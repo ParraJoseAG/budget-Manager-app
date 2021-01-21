@@ -1,6 +1,7 @@
 package com.alkemy.java.budgetManager.serviceImpl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.alkemy.java.budgetManager.entities.OperationEntity;
+import com.alkemy.java.budgetManager.entities.PersonEntity;
+import com.alkemy.java.budgetManager.models.Type;
 import com.alkemy.java.budgetManager.repository.IOperationRepository;
 import com.alkemy.java.budgetManager.service.IOperationService;
 
@@ -72,6 +75,34 @@ public class OperationService implements IOperationService {
 			expenses = totalExpenses;
 		}
 		return expenses;
+	}
+
+	@Override
+	public void saveSendingMoney(OperationEntity operationEntity) throws Exception {
+
+		PersonEntity person = new PersonEntity();
+		person = operationEntity.getPerson();
+		Long idPerson = person.getId();
+
+		BigDecimal amountAvailable = getCurrentBalance(idPerson);
+		BigDecimal amountSendingMoney = operationEntity.getAmount();
+
+		if (amountSendingMoney.compareTo(amountAvailable) > 0) {
+			throw new Exception();
+		}
+		operationEntity.setConcept("ENVIO DE DINERO");
+		operationEntity.setDate(new Date());
+		operationEntity.setType(Type.EXPENSES);
+		operationRepository.save(operationEntity);
+	}
+
+	@Override
+	public void saveReceiveMoney(OperationEntity operationEntity) {
+
+		operationEntity.setConcept("RECIBO DE DINERO");
+		operationEntity.setDate(new Date());
+		operationEntity.setType(Type.INGRESS);
+		operationRepository.save(operationEntity);
 	}
 
 }

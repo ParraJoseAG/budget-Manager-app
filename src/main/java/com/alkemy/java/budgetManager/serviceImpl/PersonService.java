@@ -45,7 +45,7 @@ public class PersonService implements IPersonService {
 	public PersonEntity getPersonById(Long id) throws PersonNotFoundException {
 
 		PersonEntity person = personRepository.findById(id)
-				.orElseThrow(() -> new PersonNotFoundException("No existe usuario"));
+				.orElseThrow(() -> new PersonNotFoundException("No esta registrado el usuario en la App"));
 		return person;
 
 	}
@@ -53,7 +53,7 @@ public class PersonService implements IPersonService {
 	@Override
 	public void deletePersonById(Long id) throws PersonNotFoundException {
 		PersonEntity person = personRepository.findById(id)
-				.orElseThrow(() -> new PersonNotFoundException("No existe usuario"));
+				.orElseThrow(() -> new PersonNotFoundException("No esta registrado el usuario en la App"));
 
 		personRepository.deleteById(id);
 

@@ -12,6 +12,10 @@ public interface IOperationService {
 
 	void saveOperation(OperationEntity operationEntity);
 
+	void saveSendingMoney(OperationEntity operationEntity) throws Exception;
+
+	void saveReceiveMoney(OperationEntity operationEntity);
+
 	List<OperationEntity> getLastTenOperation(Long id);
 
 	Page<OperationEntity> getListOperationIngress(Long id, Pageable pageable);
