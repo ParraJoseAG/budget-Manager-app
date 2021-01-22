@@ -92,7 +92,13 @@ public class BudgetManagerController {
 			return "budgetManager/addOperation";
 		}
 
-		operationService.saveOperation(operationEntity);
+		try {
+			operationService.saveOperation(operationEntity);
+		} catch (Exception e) {
+			attribute.addFlashAttribute("error",
+					"No tiene suficiente dinero disponible en su balance para realizar la operación!");
+			return "redirect:/operation/person/";
+		}
 		attribute.addFlashAttribute("success", "Operación registrada con éxito!");
 		return "redirect:/operation/person/";
 	}
@@ -186,10 +192,12 @@ public class BudgetManagerController {
 
 		List<PersonEntity> listPersonUsers = pagePersonUsers.getContent().stream()
 				.filter(user -> user.getId().longValue() != idUser.longValue()).collect(Collectors.toList());
+		BigDecimal balance = operationService.getCurrentBalance(idUser);
 
 		model.addAttribute("listUsers", listPersonUsers);
 		model.addAttribute("person", personUser);
 		model.addAttribute("titleTable", "Usuarios registradas en la App");
+		model.addAttribute("balance", balance);
 		model.addAttribute("current", page + 1);
 		model.addAttribute("next", page + 2);
 		model.addAttribute("previous", page);

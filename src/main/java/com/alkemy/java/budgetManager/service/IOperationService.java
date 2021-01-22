@@ -10,7 +10,7 @@ import com.alkemy.java.budgetManager.entities.OperationEntity;
 
 public interface IOperationService {
 
-	void saveOperation(OperationEntity operationEntity);
+	void saveOperation(OperationEntity operationEntity) throws Exception;
 
 	void saveSendingMoney(OperationEntity operationEntity) throws Exception;
 

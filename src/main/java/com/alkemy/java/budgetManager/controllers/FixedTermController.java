@@ -5,9 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alkemy.java.budgetManager.Utils.FixedTermUtil;
+import com.alkemy.java.budgetManager.Utils.PersonAuthenticationUtil;
 import com.alkemy.java.budgetManager.entities.FixedTermEntity;
 import com.alkemy.java.budgetManager.entities.OperationEntity;
 import com.alkemy.java.budgetManager.entities.PersonEntity;
@@ -25,16 +23,12 @@ import com.alkemy.java.budgetManager.exceptions.FixedTermNotFoundException;
 import com.alkemy.java.budgetManager.models.Type;
 import com.alkemy.java.budgetManager.service.IFixedTermService;
 import com.alkemy.java.budgetManager.service.IOperationService;
-import com.alkemy.java.budgetManager.service.IPersonService;
 
 @Controller
-@RequestMapping({ "/fixedTerm/person/{idUser}", "/fixedTerm/person/" })
+@RequestMapping("/fixedTerm/person/")
 public class FixedTermController {
 
 	private PersonEntity personUser;
-
-	@Autowired
-	private IPersonService personService;
 
 	@Autowired
 	private IFixedTermService fixedTermService;
@@ -45,17 +39,14 @@ public class FixedTermController {
 	@Autowired
 	private FixedTermUtil fixedTermUtil;
 
-	@GetMapping
-	public String depositsFixed(@PathVariable(required = false) Long idUser, Model model) {
+	@Autowired
+	private PersonAuthenticationUtil personAuthenticationUtil;
 
-		if (idUser == null) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			UserDetails userDetail = (UserDetails) auth.getPrincipal();
-			personUser = personService.findByUsername(userDetail.getUsername());
-			idUser = personUser.getId();
-		} else {
-			personUser = personService.getPersonById(idUser);
-		}
+	@GetMapping
+	public String depositsFixed(Model model) {
+
+		personUser = personAuthenticationUtil.personAuthentication();
+		Long idUser = personUser.getId();
 
 		FixedTermEntity fixedTerm = new FixedTermEntity();
 		fixedTerm.setPerson(personUser);
@@ -95,7 +86,13 @@ public class FixedTermController {
 
 		OperationEntity operationFixedTerm = fixedTermUtil.getOperation(Type.EXPENSES, fixedTerm);
 
-		operationService.saveOperation(operationFixedTerm);
+		try {
+			operationService.saveOperation(operationFixedTerm);
+		} catch (Exception e) {
+			attribute.addFlashAttribute("error",
+					"No tiene suficiente dinero disponible en su balance para realizar la operación!");
+			return "redirect:/fixedTerm/person/";
+		}
 		attribute.addFlashAttribute("success", "Operación exitosa!");
 		return "redirect:/fixedTerm/person/";
 	}
@@ -115,7 +112,13 @@ public class FixedTermController {
 		OperationEntity operationFixedTerm = fixedTermUtil.getOperation(Type.INGRESS, fixedTerm);
 
 		fixedTermService.deleteByIdFixedTerm(idFixed);
-		operationService.saveOperation(operationFixedTerm);
+		try {
+			operationService.saveOperation(operationFixedTerm);
+		} catch (Exception e) {
+			attribute.addFlashAttribute("error",
+					"No tiene suficiente dinero disponible en su balance para realizar la operación!");
+			return "redirect:/fixedTerm/person/";
+		}
 
 		attribute.addFlashAttribute("success", "Deposito en cuenta por plazo fijo exitoso!");
 		return "redirect:/fixedTerm/person/";
