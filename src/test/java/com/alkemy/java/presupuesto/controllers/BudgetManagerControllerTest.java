@@ -29,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.mockito.junit.MockitoJUnitRunner;
@@ -40,6 +41,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import org.springframework.web.context.WebApplicationContext;
 
+import com.alkemy.java.budgetManager.Utils.PersonAuthenticationUtil;
 import com.alkemy.java.budgetManager.controllers.BudgetManagerController;
 import com.alkemy.java.budgetManager.entities.OperationEntity;
 import com.alkemy.java.budgetManager.entities.PersonEntity;
@@ -58,6 +60,9 @@ public class BudgetManagerControllerTest {
 	@Mock
 	private IOperationService operationServiceMock;
 
+	@Mock
+	private PersonAuthenticationUtil personAuthenticationUtilMock;
+
 	@InjectMocks
 	private BudgetManagerController budgetManagerController;
 
@@ -73,6 +78,12 @@ public class BudgetManagerControllerTest {
 
 	@Test
 	public void testHomePerson() throws Exception {
+
+		PersonEntity personUser = Mockito.mock(PersonEntity.class);
+		personUser.setId(1L);
+		Mockito.when(personUser.getId()).thenReturn(1L);
+
+		Mockito.when(personAuthenticationUtilMock.personAuthentication()).thenReturn(personUser);
 
 		List<OperationEntity> listOperationsPerson = new ArrayList<OperationEntity>();
 
@@ -92,8 +103,8 @@ public class BudgetManagerControllerTest {
 		listOperationsPerson.add(op1);
 		listOperationsPerson.add(op2);
 
-		when(operationServiceMock.getLastTenOperation(null)).thenReturn(listOperationsPerson);
-		when(operationServiceMock.getCurrentBalance(null)).thenReturn(new BigDecimal(8000));
+		when(operationServiceMock.getLastTenOperation(Mockito.anyLong())).thenReturn(listOperationsPerson);
+		when(operationServiceMock.getCurrentBalance(Mockito.anyLong())).thenReturn(new BigDecimal(8000));
 
 		mockMvc.perform(get("/operation/person/")).andExpect(status().isOk())
 				.andExpect(view().name("budgetManager/homeOperationPerson"))
@@ -109,8 +120,8 @@ public class BudgetManagerControllerTest {
 				.andExpect(model().attribute("balance", new BigDecimal(8000)))
 				.andExpect(model().attribute("person", instanceOf(PersonEntity.class)));
 
-		verify(operationServiceMock, times(1)).getLastTenOperation(null);
-		verify(operationServiceMock, times(1)).getCurrentBalance(null);
+		verify(operationServiceMock, times(1)).getLastTenOperation(Mockito.anyLong());
+		verify(operationServiceMock, times(1)).getCurrentBalance(Mockito.anyLong());
 		verifyNoMoreInteractions(operationServiceMock);
 
 	}
@@ -118,9 +129,13 @@ public class BudgetManagerControllerTest {
 	@Test
 	public void testAddOperation() throws Exception {
 
+		PersonEntity personUser = Mockito.mock(PersonEntity.class);
+		personUser.setId(1L);
+
+		Mockito.when(personAuthenticationUtilMock.personAuthentication()).thenReturn(personUser);
+
 		mockMvc.perform(get("/operation/addOperation/")).andExpect(status().isOk())
-				.andExpect(view().name("budgetManager/addOperation"))
-				.andExpect(model().attribute("person", instanceOf(PersonEntity.class)))
+				.andExpect(view().name("budgetManager/addOperation")).andExpect(model().attribute("person", personUser))
 				.andExpect(model().attribute("operation", instanceOf(OperationEntity.class)))
 				.andExpect(model().attribute("operation", hasProperty("person", instanceOf(PersonEntity.class))));
 

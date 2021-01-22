@@ -39,6 +39,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.alkemy.java.budgetManager.Utils.FixedTermUtil;
+import com.alkemy.java.budgetManager.Utils.PersonAuthenticationUtil;
 import com.alkemy.java.budgetManager.controllers.FixedTermController;
 import com.alkemy.java.budgetManager.entities.FixedTermEntity;
 import com.alkemy.java.budgetManager.entities.PersonEntity;
@@ -64,6 +65,9 @@ public class FixedTermControllerTest {
 	@Mock
 	private FixedTermUtil fixedTermUtilMock;
 
+	@Mock
+	private PersonAuthenticationUtil personAuthenticationUtilMock;
+
 	@InjectMocks
 	private FixedTermController fixedTermController;
 
@@ -79,6 +83,12 @@ public class FixedTermControllerTest {
 
 	@Test
 	public void test1DepositsFixed() throws Exception {
+
+		PersonEntity personUser = Mockito.mock(PersonEntity.class);
+		personUser.setId(1L);
+		Mockito.when(personUser.getId()).thenReturn(1L);
+
+		Mockito.when(personAuthenticationUtilMock.personAuthentication()).thenReturn(personUser);
 
 		List<FixedTermEntity> listDepositsFixed = new ArrayList<FixedTermEntity>();
 
@@ -96,12 +106,10 @@ public class FixedTermControllerTest {
 		listDepositsFixed.add(fixedTerm1);
 		listDepositsFixed.add(fixedTerm2);
 
-		Mockito.when(personServiceMock.getPersonById(Mockito.anyLong())).thenReturn(new PersonEntity());
 		Mockito.when(fixedTermServiceMock.getListFixedTermPerson(Mockito.anyLong())).thenReturn(listDepositsFixed);
-
 		Mockito.when(operationServiceMock.getCurrentBalance(Mockito.anyLong())).thenReturn(new BigDecimal(400));
 
-		mockMvc.perform(get("/fixedTerm/person/{id}", 1L)).andExpect(status().isOk())
+		mockMvc.perform(get("/fixedTerm/person/")).andExpect(status().isOk())
 				.andExpect(view().name("fixedTerm/depositsFixed"))
 				.andExpect(model().attribute("listDepositsFixed", hasSize(2)))
 				.andExpect(model().attribute("listDepositsFixed",
