@@ -15,7 +15,6 @@
 <title>GESTOR DE PRESUPUESTO</title>
 </head>
 <body>
-
 	<header>
 		<div th:insert="/templateOperation :: header"></div>
 	</header>
@@ -49,9 +48,6 @@
 						<th scope="col">MONTO</th>
 						<th scope="col">FECHA</th>
 						<th scope="col">TIPO</th>
-						<th scope="col">EDITAR</th>
-						<th scope="col">ELIMINAR</th>
-
 					</tr>
 				</thead>
 				<tbody>
@@ -61,16 +57,6 @@
 						<td th:text="${operation.amount}"></td>
 						<td th:text="${operation.date}"></td>
 						<td th:text="${operation.type.typeOperation}"></td>
-						<td><a class="btn btn-success btn-sm"
-							th:href="@{/operation/edit/{id} (id=${operation.id})}"
-							title="Editar operación"><i class="fa fa-pencil-square-o"
-								aria-hidden="true"></i> Editar</a></td>
-						<td><a class="btn btn-danger btn-sm"
-							th:href="@{/operation/delete/{id} (id=${operation.id})}"
-							title="Eliminar operación"
-							onclick="return confirm('¿Estas seguro de eliminar la operación?')"><i
-								class="fa fa-trash-o fa-lg"></i> Eliminar</a></td>
-
 					</tr>
 				</tbody>
 			</table>
@@ -106,7 +92,7 @@
 			</div>
 		</div>
 	</div>
-	<footer>
+	<footer class="mt-5">
 		<div th:insert="/template :: footer"></div>
 	</footer>
 

@@ -74,7 +74,7 @@ public class FixedTermServiceImplTest {
 	}
 
 	@Test(expected = Exception.class)
-	public void testSaveFixedTermShouldThrowsExceptionBalanceMenorFixedTerm() throws Exception {
+	public void testSaveFixedTermShouldThrowsExceptionBalanceMinorFixedTerm() throws Exception {
 
 		BigDecimal balance = new BigDecimal(0);
 		BigDecimal amountFixedTerm = new BigDecimal(1);

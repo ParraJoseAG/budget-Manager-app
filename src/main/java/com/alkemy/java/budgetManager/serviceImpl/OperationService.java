@@ -22,8 +22,22 @@ public class OperationService implements IOperationService {
 	private IOperationRepository operationRepository;
 
 	@Override
-	public void saveOperation(OperationEntity operationEntity) {
+	public void saveOperation(OperationEntity operationEntity) throws Exception {
 
+		PersonEntity person = new PersonEntity();
+		person = operationEntity.getPerson();
+		Type type = operationEntity.getType();
+
+		if (type.getTypeOperation() == "EGRESO") {
+			Long idPerson = person.getId();
+			BigDecimal amountEgreso = operationEntity.getAmount();
+			BigDecimal amountAvailable = getCurrentBalance(idPerson);
+
+			if (amountEgreso.compareTo(amountAvailable) > 0) {
+				throw new Exception();
+			}
+
+		}
 		operationRepository.save(operationEntity);
 	}
 
