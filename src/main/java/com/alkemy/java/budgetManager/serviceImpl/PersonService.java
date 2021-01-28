@@ -55,7 +55,7 @@ public class PersonService implements IPersonService {
 		PersonEntity person = personRepository.findById(id)
 				.orElseThrow(() -> new PersonNotFoundException("No esta registrado el usuario en la App"));
 
-		personRepository.deleteById(id);
+		personRepository.deleteById(person.getId());
 
 	}
 
