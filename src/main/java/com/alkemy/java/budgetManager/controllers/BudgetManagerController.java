@@ -57,7 +57,7 @@ public class BudgetManagerController {
 		model.addAttribute("operations", listOperationsPerson);
 		model.addAttribute("person", personUser);
 		model.addAttribute("balance", balance);
-		model.addAttribute("titleTable", "Últimas operaciones realizadas");
+		model.addAttribute("titleTable", "ÚLTIMAS OPERACIONES REGISTRADAS");
 		return "budgetManager/homeOperationPerson";
 	}
 
@@ -84,7 +84,7 @@ public class BudgetManagerController {
 		personUser = personAuthenticationUtil.personAuthentication();
 
 		if (result.hasErrors()) {
-			model.addAttribute("titleTable", "Nueva Operación");
+			model.addAttribute("titleTable", "NUEVA OPERACIÓN");
 			model.addAttribute("person", personUser);
 			model.addAttribute("operation", operationEntity);
 			model.addAttribute("listTypeOperation", Type.values());
@@ -95,11 +95,10 @@ public class BudgetManagerController {
 		try {
 			operationService.saveOperation(operationEntity);
 		} catch (Exception e) {
-			attribute.addFlashAttribute("error",
-					"No tiene suficiente dinero disponible en su balance para realizar la operación!");
+			attribute.addFlashAttribute("error", "NO TIENE SUFICIENTE DINERO DISPONIBLE PARA REALIZAR ESTA OPERACIÓN!");
 			return "redirect:/operation/person/";
 		}
-		attribute.addFlashAttribute("success", "Operación registrada con éxito!");
+		attribute.addFlashAttribute("success", "OPERACIÓN REGISTRADA CON ÉXITO!");
 		return "redirect:/operation/person/";
 	}
 
@@ -133,7 +132,7 @@ public class BudgetManagerController {
 		model.addAttribute("next", page + 2);
 		model.addAttribute("previous", page);
 		model.addAttribute("last", totalPage);
-		model.addAttribute("titleTable", "Operaciones de tipo ingresos realizadas");
+		model.addAttribute("titleTable", "OPERACIONES DE TIPO INGRESO REALIZADAS");
 		return "budgetManager/homeOperationPerson";
 	}
 
@@ -167,7 +166,7 @@ public class BudgetManagerController {
 		model.addAttribute("next", page + 2);
 		model.addAttribute("previous", page);
 		model.addAttribute("last", totalPage);
-		model.addAttribute("titleTable", "Operaciones de tipo egresos realizadas");
+		model.addAttribute("titleTable", "OPERACIONES DE TI EGRESO REALIZADAS");
 		return "budgetManager/operationsExpenses";
 	}
 
@@ -243,11 +242,11 @@ public class BudgetManagerController {
 			operationService.saveSendingMoney(operationUser);
 		} catch (Exception e) {
 			attribute.addFlashAttribute("error",
-					"No tiene suficiente dinero disponible en su balance para enviar la cantidad solicitada!");
+					"NO TIENE SUFICIENTE DINERO DISPONIBLE EN SU BALANCE PARA ENVIAR LA CANTIDAD SOLICITADA!");
 			return "redirect:/operation/person/listUsers/";
 		}
 		operationService.saveReceiveMoney(operationEntity);
-		attribute.addFlashAttribute("success", "El envio de dinero ha sido exitoso!");
+		attribute.addFlashAttribute("success", "EL ENVIO DE DINERO SE HA SIDO EXITOSO!");
 		return "redirect:/operation/person/";
 	}
 
