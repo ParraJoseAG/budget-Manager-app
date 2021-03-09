@@ -67,6 +67,8 @@ public class PersonEntity implements Serializable {
 	private Set<AuthorityEntity> authority;
 	@OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<OperationEntity> operations;
+	@OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<PendingPaymentEntity> pendingPayments;
 
 	public Long getId() {
 		return id;
@@ -178,6 +180,14 @@ public class PersonEntity implements Serializable {
 
 	public void setOperations(List<OperationEntity> operations) {
 		this.operations = operations;
+	}
+
+	public List<PendingPaymentEntity> getPendingPayments() {
+		return pendingPayments;
+	}
+
+	public void setPendingPayments(List<PendingPaymentEntity> pendingPayments) {
+		this.pendingPayments = pendingPayments;
 	}
 
 	private static final long serialVersionUID = 1L;
